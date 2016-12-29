@@ -22,12 +22,16 @@ class Code {
 		return call_user_func_array( [ $this->link, $method ], $params );
 	}
 
-	public static function __callStatic( $name, $arguments ) {
+	public static function single() {
 		static $link = null;
 		if ( is_null( $link ) ) {
 			$link = new Code();
 		}
 
-		return call_user_func_array( [ $link, $name ], $arguments );
+		return $link;
+	}
+
+	public static function __callStatic( $name, $arguments ) {
+		return call_user_func_array( [ static::single(), $name ], $arguments );
 	}
 }

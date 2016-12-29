@@ -2,17 +2,15 @@
 require 'vendor/autoload.php';
 $config = [
 	//引擎:file,mysql,memcache,redis
-	'driver'    => 'file',
+	'driver' => 'file',
 	//session_name
-	'name'      => 'hdcmsid',
-	//cookie加密密钥
-	'secureKey' => 'houdunwang88',
+	'name'   => 'hdcmsid',
 	//有效域名
-	'domain'    => '',
+	'domain' => '',
 	//过期时间 0 会话时间 3600 为一小时
-	'expire'    => 0,
+	'expire' => 0,
 	#File
-	'file'      => [
+	'file'   => [
 		'path' => 'storage/session',
 	],
 ];
