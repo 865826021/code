@@ -20,8 +20,8 @@ class CodeProvider extends Provider {
 	}
 
 	public function register() {
-		$this->app->single( 'Code', function ( $app ) {
-			return new Code( $app );
+		$this->app->single( 'Code', function () {
+			return new Code();
 		} );
 	}
 }

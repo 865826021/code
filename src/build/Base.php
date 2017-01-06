@@ -12,32 +12,68 @@ namespace houdunwang\code\build;
 use houdunwang\session\Session;
 
 class Base {
+	protected $config = [
+		//画布宽度
+		'width'     => 100,
+		//画布高度
+		'$height'   => 30,
+		//背景颜色
+		'bgColor'   => '#ffffff',
+		//验证码的随机种子
+		'codeStr'   => '23456789abcdefghjkmnpqrstuvwsyz',
+		//验证码长度
+		'codeLen'   => 4,
+		//验证码字体
+		'font'      => '',
+		//验证码字体大小
+		'fontSize'  => 16,
+		//验证码字体颜色
+		'fontColor' => ''
+	];
 	//资源
 	private $img;
-	//画布宽度
-	private $width = 100;
-	//画布高度
-	private $height = 30;
-	//背景颜色
-	private $bgColor = '#ffffff';
 	//验证码
 	private $code;
-	//验证码的随机种子
-	private $codeStr = '23456789abcdefghjkmnpqrstuvwsyz';
-	//验证码长度
-	private $codeLen = 4;
-	//验证码字体
-	private $font;
-	//验证码字体大小
-	private $fontSize = 16;
-	//验证码字体颜色
-	private $fontColor = '';
+	//随机
+//	//画布宽度
+//	private $width = 100;
+//	//画布高度
+//	private $height = 30;
+//	//背景颜色
+//	private $bgColor = '#ffffff';
+//	//验证码的随机种子
+//	private $codeStr = '23456789abcdefghjkmnpqrstuvwsyz';
+//	//验证码长度
+//	private $codeLen = 4;
+//	//验证码字体
+//	private $font = '';
+//	//验证码字体大小
+//	private $fontSize = 16;
+//	//验证码字体颜色
+//	private $fontColor = '';
+
+	/**
+	 * 配置管理
+	 *
+	 * @param $config
+	 * @param null $value
+	 *
+	 * @return $this
+	 */
+	public function config( $config, $value = null ) {
+		if ( is_array( $config ) ) {
+			$this->config = $config;
+		} else if ( is_null( $value ) ) {
+			return Arr::get( $this->config, $config );
+		} else {
+			$this->config = Arr::set( $this->config, $config, $value );
+		}
+
+		return $this;
+	}
 
 	//创建验证码
 	public function make() {
-		if ( empty( $this->font ) ) {
-			$this->font = __DIR__ . '/font.ttf';
-		}
 		$this->create();//生成验证码
 		header( "Content-type:image/png" );
 		imagepng( $this->img );
@@ -47,49 +83,49 @@ class Base {
 
 	//设置字体文件
 	public function font( $font ) {
-		$this->font = $font;
+		$this->config( 'font', $font );
 
 		return $this;
 	}
 
 	//设置文字大小
 	public function fontSize( $fontSize ) {
-		$this->fontSize = $fontSize;
+		$this->config( 'fontSize', $fontSize );
 
 		return $this;
 	}
 
 	//设置字体颜色
 	public function fontColor( $fontColor ) {
-		$this->fontColor = $fontColor;
+		$this->config( 'fontColor', $fontColor );
 
 		return $this;
 	}
 
 	//验证码数量
 	public function num( $num ) {
-		$this->codeLen = $num;
+		$this->config( 'codeLen', $num );
 
 		return $this;
 	}
 
 	//设置宽度
 	public function width( $width ) {
-		$this->width = $width;
+		$this->config( 'width', $width );
 
 		return $this;
 	}
 
 	//设置高度
 	public function height( $height ) {
-		$this->height = $height;
+		$this->config( 'height', $height );
 
 		return $this;
 	}
 
 	//设置背景颜色
 	public function background( $color ) {
-		$this->bgColor = $color;
+		$this->config( 'bgColor', $color );
 
 		return $this;
 	}
@@ -113,8 +149,8 @@ class Base {
 	//生成验证码
 	private function createCode() {
 		$code = '';
-		for ( $i = 0; $i < $this->codeLen; $i ++ ) {
-			$code .= $this->codeStr [ mt_rand( 0, strlen( $this->codeStr ) - 1 ) ];
+		for ( $i = 0; $i < $this->config['codeLen']; $i ++ ) {
+			$code .= $this->config['codeStr'] [ mt_rand( 0, strlen( $this->config['codeStr'] ) - 1 ) ];
 		}
 		$this->code = strtoupper( $code );
 
@@ -126,9 +162,9 @@ class Base {
 		if ( ! $this->checkGD() ) {
 			return false;
 		}
-		$w       = $this->width;
-		$h       = $this->height;
-		$bgColor = $this->bgColor;
+		$w       = $this->config['width'];
+		$h       = $this->config['height'];
+		$bgColor = $this->config['bgColor'];
 		$img     = imagecreatetruecolor( $w, $h );
 		$bgColor = imagecolorallocate( $img, hexdec( substr( $bgColor, 1, 2 ) ), hexdec( substr( $bgColor, 3, 2 ) ), hexdec( substr( $bgColor, 5, 2 ) ) );
 		imagefill( $img, 0, 0, $bgColor );
@@ -141,8 +177,8 @@ class Base {
 
 	//画线
 	private function createLine() {
-		$w          = $this->width;
-		$h          = $this->height;
+		$w          = $this->config['width'];
+		$h          = $this->config['height'];
 		$line_color = "#dcdcdc";
 		$color      = imagecolorallocate( $this->img, hexdec( substr( $line_color, 1, 2 ) ), hexdec( substr( $line_color, 3, 2 ) ), hexdec( substr( $line_color, 5, 2 ) ) );
 		$l          = $h / 5;
@@ -159,39 +195,39 @@ class Base {
 
 	//画矩形边框
 	private function createRec() {
-		//imagerectangle($this->img, 0, 0, $this->width - 1, $this->height - 1, $this->fontColor);
+		//imagerectangle($this->img, 0, 0, $this->config['width'] - 1, $this->config['height'] - 1, $this->config['fontColor']);
 	}
 
 	//写入验证码文字
 	private function createFont() {
 		$this->createCode();
-		$color = $this->fontColor;
+		$color = $this->config['fontColor'];
 		if ( ! empty( $color ) ) {
 			$fontColor = imagecolorallocate( $this->img, hexdec( substr( $color, 1, 2 ) ), hexdec( substr( $color, 3, 2 ) ), hexdec( substr( $color, 5, 2 ) ) );
 		}
-		$x = ( $this->width - 10 ) / $this->codeLen;
-		for ( $i = 0; $i < $this->codeLen; $i ++ ) {
+		$x = ( $this->config['width'] - 10 ) / $this->config['codeLen'];
+		for ( $i = 0; $i < $this->config['codeLen']; $i ++ ) {
 			if ( empty( $color ) ) {
 				$fontColor = imagecolorallocate( $this->img, mt_rand( 50, 155 ), mt_rand( 50, 155 ), mt_rand( 50, 155 ) );
 			}
-			imagettftext( $this->img, $this->fontSize, mt_rand( - 30, 30 ), $x * $i + mt_rand( 6, 10 ), mt_rand( $this->height / 1.3, $this->height - 5 ), $fontColor, $this->font, $this->code [ $i ] );
+			imagettftext( $this->img, $this->config['fontSize'], mt_rand( - 30, 30 ), $x * $i + mt_rand( 6, 10 ), mt_rand( $this->config['height'] / 1.3, $this->config['height'] - 5 ), $fontColor, $this->config['font'], $this->code [ $i ] );
 		}
-		$this->fontColor = $fontColor;
+		$this->config['fontColor'] = $fontColor;
 	}
 
 	//画线
 	private function createPix() {
-		$pix_color = $this->fontColor;
+		$pix_color = $this->config['fontColor'];
 		for ( $i = 0; $i < 50; $i ++ ) {
-			imagesetpixel( $this->img, mt_rand( 0, $this->width ), mt_rand( 0, $this->height ), $pix_color );
+			imagesetpixel( $this->img, mt_rand( 0, $this->config['width'] ), mt_rand( 0, $this->config['height'] ), $pix_color );
 		}
 		for ( $i = 0; $i < 2; $i ++ ) {
-			imageline( $this->img, mt_rand( 0, $this->width ), mt_rand( 0, $this->height ), mt_rand( 0, $this->width ), mt_rand( 0, $this->height ), $pix_color );
+			imageline( $this->img, mt_rand( 0, $this->config['width'] ), mt_rand( 0, $this->config['height'] ), mt_rand( 0, $this->config['width'] ), mt_rand( 0, $this->config['height'] ), $pix_color );
 		}
 		//画圆弧
 		for ( $i = 0; $i < 1; $i ++ ) {
 			// 设置画线宽度
-			imagearc( $this->img, mt_rand( 0, $this->width ), mt_rand( 0, $this->height ), mt_rand( 0, $this->width ), mt_rand( 0, $this->height ), mt_rand( 0, 160 ), mt_rand( 0, 200 ), $pix_color );
+			imagearc( $this->img, mt_rand( 0, $this->config['width'] ), mt_rand( 0, $this->config['height'] ), mt_rand( 0, $this->config['width'] ), mt_rand( 0, $this->config['height'] ), mt_rand( 0, 160 ), mt_rand( 0, 200 ), $pix_color );
 		}
 		imagesetthickness( $this->img, 1 );
 	}

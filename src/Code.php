@@ -10,6 +10,7 @@
 namespace houdunwang\code;
 
 use houdunwang\code\build\Base;
+use houdunwang\config\Config;
 
 class Code {
 	protected $link;
@@ -17,6 +18,7 @@ class Code {
 	public function __call( $method, $params ) {
 		if ( ! $this->link ) {
 			$this->link = new Base();
+			$this->link->config( Config::get( 'code' ) );
 		}
 
 		return call_user_func_array( [ $this->link, $method ], $params );
